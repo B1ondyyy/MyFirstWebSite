@@ -1,41 +1,37 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     entry: './src/index.js',
     mode: 'development',
-    watch: true,
     output: {
         filename: 'main.js',
         path: path.resolve(__dirname, 'dist'),
+        clean: true, // Очищает папку dist перед каждым билдом
     },
-    module:{
-        rules: [{
-            test: /\.(scss)$/,
-            use: [{
-                // inject CSS to page
-                loader: 'style-loader'
-            }, {
-                // translates CSS into CommonJS modules
-                loader: 'css-loader'
-            }, {
-                // Run postcss actions
-                loader: 'postcss-loader',
-                options: {
-                    // `postcssOptions` is needed for postcss 8.x;
-                    // if you use postcss 7.x skip the key
-                    postcssOptions: {
-                        // postcss plugins, can be exported to postcss.config.js
-                        plugins: function () {
-                            return [
-                                require('autoprefixer')
-                            ];
-                        }
-                    }
-                }
-            }, {
-                // compiles Sass to CSS
-                loader: 'sass-loader'
-            }]
-        }]
-    }
+    module: {
+        rules: [
+            {
+                test: /\.scss$/,
+                use: [
+                    'style-loader',
+                    'css-loader',
+                    'postcss-loader',
+                    'sass-loader'
+                ],
+            },
+        ],
+    },
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: './src/index.html' // Путь к вашему исходному HTML файлу
+        })
+    ],
+    devServer: {
+        static: {
+            directory: path.join(__dirname, 'dist'),
+        },
+        compress: true,
+        port: 9000,
+    },
 };
